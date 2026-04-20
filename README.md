@@ -181,7 +181,7 @@ streamlit run dashboard/app.py
 |--------|----------|-------------|
 | GET | `/salud` | Estado de la API y número de líneas disponibles |
 | GET | `/predecir/{linea}?dias=7` | Predicción de demanda con nivel de riesgo |
-| GET | `/docs` | Documentación interactiva (Swagger UI) |
+| GET | `/docs` | Documentación interactiva |
 
 ### Ejemplo de respuesta
 
