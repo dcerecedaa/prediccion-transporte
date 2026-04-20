@@ -1,0 +1,23 @@
+artifact_path: file:C:/Development/codigo-proyecto-samsung/proyecto-transporte/mlruns/1/models/m-9b483fa44cc249c2ad65729d617582bc/artifacts
+flavors:
+  lightgbm:
+    code: null
+    data: model.pkl
+    lgb_version: 4.6.0
+    model_class: lightgbm.sklearn.LGBMRegressor
+    serialization_format: cloudpickle
+    skops_trusted_types: null
+  python_function:
+    data: model.pkl
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.lightgbm
+    python_version: 3.13.3
+mlflow_version: 3.10.1
+model_id: m-9b483fa44cc249c2ad65729d617582bc
+model_size_bytes: 2849738
+model_uuid: m-9b483fa44cc249c2ad65729d617582bc
+prompts: null
+run_id: 2369a7bf82b741a1a2943e6fc8a9afc7
+utc_time_created: '2026-03-29 00:41:26.234079'
