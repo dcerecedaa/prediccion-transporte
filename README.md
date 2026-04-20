@@ -285,14 +285,6 @@ pip install -r requirements.txt
 
 ---
 
-## 👥 Autores
-
-- **Alejandro Moreno**
-- **Carolina González**
-- **David Cereceda**
-
----
-
 ## 📅 Estado del proyecto
 
 El proyecto está completo e incluye pipeline de datos, modelo entrenado, validación con datos reales, API REST y dashboard interactivo. Las siguientes funcionalidades están contempladas como evolución futura:
@@ -301,3 +293,11 @@ El proyecto está completo e incluye pipeline de datos, modelo entrenado, valida
 - Integración de señales externas — feed de Twitter/X de la EMT para detección de incidencias
 - Predicción a nivel de parada (requiere datos horarios por parada)
 - Despliegue en servidor con autenticación en los endpoints
+
+---
+
+## 👥 Autores
+
+- **Alejandro Moreno**
+- **Carolina González**
+- **David Cereceda**
