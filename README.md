@@ -1,4 +1,10 @@
 # 🚍 Predicción de Demanda — Transporte Público de Madrid EMT
+![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
+![LightGBM](https://img.shields.io/badge/Model-LightGBM-orange.svg)
+![FastAPI](https://img.shields.io/badge/API-FastAPI-009688.svg)
+![Streamlit](https://img.shields.io/badge/Dashboard-Streamlit-FF4B4B.svg)
+![Data](https://img.shields.io/badge/Data-EMT%20Madrid%202019--2026-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 Sistema de análisis y predicción de la demanda diaria por línea de autobús de la EMT de Madrid, con estimación de riesgo de saturación, API REST y dashboard interactivo.
 
