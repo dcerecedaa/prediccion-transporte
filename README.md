@@ -110,7 +110,7 @@ proyecto-transporte/
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/decerecedaa/proyecto-transporte.git
+git clone https://github.com/decerecedaa/prediccion-transporte
 cd proyecto-transporte
 
 # 2. Instalar dependencias
