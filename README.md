@@ -110,15 +110,10 @@ proyecto-transporte/
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/proyecto-transporte.git
+git clone https://github.com/decerecedaa/proyecto-transporte.git
 cd proyecto-transporte
 
-# 2. Crear y activar entorno virtual (recomendado)
-python -m venv venv
-source venv/bin/activate        # Linux / Mac
-venv\Scripts\activate           # Windows
-
-# 3. Instalar dependencias
+# 2. Instalar dependencias
 pip install -r requirements.txt
 ```
 
