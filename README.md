@@ -296,8 +296,18 @@ El proyecto está completo e incluye pipeline de datos, modelo entrenado, valida
 
 ---
 
-## 👥 Autores
+## 🤝 Contribuciones
 
-- **Alejandro Moreno**
-- **Carolina González**
-- **David Cereceda**
+Este proyecto está abierto a sugerencias y feedback. Si tienes ideas de mejora o encuentras algún bug, no dudes en abrir un issue.
+
+---
+
+## 👨‍💻 Autor
+
+David Cereceda Pérez  
+[GitHub](https://github.com/dcerecedaa) | [LinkedIn](https://linkedin.com/in/david-cereceda-perez-3ba0962b6)
+
+---
+
+> ⚠️ **Nota final:** Este proyecto es educativo y de demostración.  
+> No está pensado para uso comercial ni producción, y se incluyen limitaciones intencionadas para mantener la implementación clara y enfocada en la lógica técnica.
