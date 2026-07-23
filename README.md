@@ -1,4 +1,5 @@
-# 🚍 Predicción de Demanda — Transporte Público de Madrid EMT
+# 🚍 Public Transport Demand Forecasting — Madrid EMT
+
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![LightGBM](https://img.shields.io/badge/Model-LightGBM-orange.svg)
 ![FastAPI](https://img.shields.io/badge/API-FastAPI-009688.svg)
@@ -6,194 +7,269 @@
 ![Data](https://img.shields.io/badge/Data-EMT%20Madrid%202019--2026-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-Sistema de análisis y predicción de la demanda diaria por línea de autobús de la EMT de Madrid, con estimación de riesgo de saturación, API REST y dashboard interactivo.
+An end-to-end Machine Learning system for forecasting daily passenger demand across Madrid EMT bus lines, estimating congestion risk, and exposing predictions through a REST API and an interactive dashboard.
 
 ---
 
-## 📌 Descripción
+# 📌 Overview
 
-Este proyecto desarrolla un pipeline completo de Machine Learning para anticipar escenarios de alta ocupación en el transporte público de Madrid. A partir de datos históricos reales de la EMT (2019–2025), el sistema predice la demanda diaria por línea con un horizonte de 7 a 14 días y clasifica el riesgo de saturación como **Bajo**, **Medio** o **Alto**.
+This project implements a complete Machine Learning pipeline to anticipate high-demand scenarios in Madrid's public transportation network.
 
-El sistema ha sido validado con datos reales de enero de 2026 obteniendo un **MAE de 390 viajeros** y un **R² de 0.985**, lo que representa menos de un 7% de error relativo medio.
+Using real historical data provided by EMT Madrid (2019–2025), the system forecasts daily passenger demand for each bus line up to **7–14 days ahead** and classifies congestion risk into three levels:
+
+- **Low**
+- **Medium**
+- **High**
+
+The model was validated using unseen data from **January 2026**, achieving:
+
+- **MAE:** 390 passengers
+- **R²:** 0.985
+
+This corresponds to an average relative prediction error below **7%**.
 
 ---
 
-## 🎯 Objetivos
+# 🎯 Objectives
 
-- Predecir la demanda diaria por línea de autobús con 7–14 días de antelación
-- Detectar patrones temporales — semanales, estacionales y atípicos
-- Clasificar el riesgo de saturación por línea y día
-- Exponer las predicciones mediante una API REST consumible por cualquier sistema
-- Visualizar los resultados en un dashboard interactivo
+- Forecast daily passenger demand for each bus line up to 14 days in advance
+- Capture weekly, seasonal, and anomalous demand patterns
+- Estimate congestion risk for every route and day
+- Provide predictions through a REST API
+- Visualize forecasts using an interactive dashboard
 
 ---
 
-## 🏗️ Arquitectura del sistema
+# 🏗️ System Architecture
 
+```text
+Raw CSV files
+      │
+      ▼
+Data ingestion & cleaning      src/ingesta/        src/preprocesamiento/
+      │
+      ▼
+Feature Engineering            src/caracteristicas/
+      │
+      ▼
+Model Training & Evaluation    src/modelos/
+      │
+      ▼
+Serialized Model               data/models/lightgbm_emt.joblib
+      │
+      ▼
+REST API                       src/api/main.py
+      │
+      ▼
+Interactive Dashboard          dashboard/app.py
 ```
-Datos crudos (CSV)
-      │
-      ▼
-Ingesta y limpieza          src/ingesta/        src/preprocesamiento/
-      │
-      ▼
-Feature engineering         src/caracteristicas/
-      │
-      ▼
-Entrenamiento y evaluación  src/modelos/
-      │
-      ▼
-Modelo serializado          data/models/lightgbm_emt.joblib
-      │
-      ▼
-API REST                    src/api/main.py
-      │
-      ▼
-Dashboard interactivo       dashboard/app.py
-```
 
 ---
 
-## 📊 Resultados
+# 📊 Results
 
-| Versión | Cambio | MAE | R² |
-|---------|--------|-----|----|
-| Baseline lag 7 días | Referencia mínima | 578 | 0.880 |
-| LightGBM base | Modelo inicial | 451 | 0.882 |
-| LightGBM + Optuna | Optimización de hiperparámetros | 430 | 0.886 |
-| LightGBM + Optuna + sin línea 868 | Versión final | 422 | 0.895 |
-| **Validación enero 2026** | **Datos nunca vistos** | **390** | **0.985** |
+| Version | Description | MAE | R² |
+|----------|-------------|-----|----|
+| 7-Day Lag Baseline | Simple reference model | 578 | 0.880 |
+| LightGBM | Initial model | 451 | 0.882 |
+| LightGBM + Optuna | Hyperparameter optimization | 430 | 0.886 |
+| LightGBM + Optuna (without Line 868) | Final model | 422 | 0.895 |
+| **January 2026 Validation** | **Unseen real-world data** | **390** | **0.985** |
 
-La validación con datos reales de enero de 2026 confirma que el modelo generaliza bien — el 85% de las predicciones tienen un error inferior al 20%.
+Evaluation on unseen data confirms that the model generalizes well, with **85% of predictions presenting less than 20% error**.
 
 ---
 
-## 🗂️ Estructura del proyecto
+# 📂 Project Structure
 
-```
-proyecto-transporte/
+```text
+project/
 ├── data/
-│   ├── raw/                         # CSV originales de la EMT — nunca se modifican
-│   ├── processed/                   # Datasets procesados y con features
-│   └── models/                      # Modelo serializado con joblib
+│   ├── raw/                        # Original EMT CSV files
+│   ├── processed/                  # Processed datasets
+│   └── models/                     # Serialized models
+│
 ├── src/
 │   ├── ingesta/
-│   │   ├── cargador.py              # Carga y unificación de CSV anuales
-│   │   └── pipeline.py             # Orquestador ingesta → limpieza → guardado
+│   │   ├── cargador.py             # CSV loader
+│   │   └── pipeline.py             # Data ingestion pipeline
+│   │
 │   ├── preprocesamiento/
-│   │   └── limpiador.py            # Limpieza, validación y marcado de outliers
+│   │   └── limpiador.py            # Cleaning & validation
+│   │
 │   ├── caracteristicas/
-│   │   └── constructor.py          # Feature engineering — lags, medias móviles, festivos
+│   │   └── constructor.py          # Feature engineering
+│   │
 │   ├── modelos/
-│   │   ├── evaluador.py            # Métricas y validación temporal compartida
-│   │   ├── baseline.py             # Modelo de referencia basado en lag de 7 días
-│   │   ├── modelo_principal.py     # LightGBM con optimización Optuna
-│   │   ├── entrenador.py           # Orquestador de entrenamiento + MLflow
-│   │   └── validacion_2026.py      # Validación con datos reales de 2026
+│   │   ├── evaluador.py            # Shared evaluation utilities
+│   │   ├── baseline.py             # 7-day lag baseline
+│   │   ├── modelo_principal.py     # LightGBM + Optuna
+│   │   ├── entrenador.py           # Training orchestrator
+│   │   └── validacion_2026.py      # Final validation
+│   │
 │   └── api/
-│       └── main.py                 # API REST con FastAPI
+│       └── main.py                 # FastAPI application
+│
 ├── dashboard/
-│   └── app.py                      # Dashboard interactivo con Streamlit
+│   └── app.py                      # Streamlit dashboard
+│
 ├── notebooks/
-│   └── 01_eda.ipynb                # Análisis exploratorio de los datos
+│   └── 01_eda.ipynb                # Exploratory Data Analysis
+│
 ├── configs/
-│   └── settings.yaml               # Configuración centralizada — festivos y umbrales
-├── mlflow.db                        # Base de datos SQLite de experimentos
+│   └── settings.yaml               # Configuration
+│
+├── mlflow.db
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## ⚙️ Instalación
+# ⚙️ Installation
 
-### Requisitos previos
+## Requirements
 
-- Python 3.10 o superior
+- Python 3.10+
 - Git
 
-### Pasos
+## Clone the repository
 
 ```bash
-# 1. Clonar el repositorio
 git clone https://github.com/decerecedaa/prediccion-transporte
 cd proyecto-transporte
+```
 
-# 2. Instalar dependencias
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
 ---
 
-## 🚀 Uso
+# 🚀 Usage
 
-### 1. Preparar los datos
+## 1. Prepare the data
 
-Coloca los CSV anuales de la EMT en `data/raw/` con el formato `demandadialinea_YYYY.csv`.
+Place the yearly EMT CSV files inside:
+
+```
+data/raw/
+```
+
+using the following naming convention:
+
+```
+demandadialinea_YYYY.csv
+```
+
+Run the ingestion pipeline:
 
 ```bash
-# Ejecutar la pipeline de ingesta y limpieza
 python -m src.ingesta.pipeline
+```
 
-# Construir las features
+Generate features:
+
+```bash
 python -m src.caracteristicas.constructor
 ```
 
-### 2. Entrenar el modelo
+---
+
+## 2. Train the models
 
 ```bash
 python -m src.modelos.entrenador
 ```
 
-Esto entrena el baseline y el modelo principal LightGBM, registra los experimentos en MLflow y guarda el modelo en `data/models/lightgbm_emt.joblib`.
+This process:
 
-Para visualizar los experimentos en MLflow:
+- Trains the baseline model
+- Trains the optimized LightGBM model
+- Logs experiments using MLflow
+- Saves the trained model into
+
+```
+data/models/lightgbm_emt.joblib
+```
+
+Launch MLflow UI:
 
 ```bash
 mlflow ui --backend-store-uri sqlite:///mlflow.db
-# Abrir http://127.0.0.1:5000
 ```
 
-### 3. Validar con datos de 2026
+Open:
+
+```
+http://127.0.0.1:5000
+```
+
+---
+
+## 3. Validate using 2026 data
 
 ```bash
 python -m src.modelos.validacion_2026
 ```
 
-### 4. Lanzar la API
+---
+
+## 4. Run the REST API
 
 ```bash
 uvicorn src.api.main:app --reload
-# Disponible en http://127.0.0.1:8000
-# Documentación interactiva en http://127.0.0.1:8000/docs
 ```
 
-### 5. Lanzar el dashboard
+Available at:
 
-En otra terminal, con la API corriendo:
+```
+http://127.0.0.1:8000
+```
 
-```bash
-streamlit run dashboard/app.py
-# Disponible en http://localhost:8501
+Interactive documentation:
+
+```
+http://127.0.0.1:8000/docs
 ```
 
 ---
 
-## 🔌 API REST
+## 5. Launch the dashboard
 
-### Endpoints
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/salud` | Estado de la API y número de líneas disponibles |
-| GET | `/predecir/{linea}?dias=7` | Predicción de demanda con nivel de riesgo |
-| GET | `/docs` | Documentación interactiva |
-
-### Ejemplo de respuesta
+With the API running:
 
 ```bash
+streamlit run dashboard/app.py
+```
+
+Dashboard:
+
+```
+http://localhost:8501
+```
+
+---
+
+# 🔌 REST API
+
+## Endpoints
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/salud` | API health status |
+| GET | `/predecir/{linea}?dias=7` | Passenger demand forecast |
+| GET | `/docs` | Swagger documentation |
+
+Example request:
+
+```http
 GET /predecir/1?dias=3
 ```
+
+Example response:
 
 ```json
 {
@@ -203,87 +279,99 @@ GET /predecir/1?dias=3
       "fecha": "2026-02-01",
       "linea": 1,
       "viajeros_predichos": 3582,
-      "riesgo": "bajo",
+      "riesgo": "low",
       "porcentaje_maximo_historico": 0.3897
-    },
-    {
-      "fecha": "2026-02-02",
-      "linea": 1,
-      "viajeros_predichos": 6432,
-      "riesgo": "bajo",
-      "porcentaje_maximo_historico": 0.6997
-    },
-    {
-      "fecha": "2026-02-03",
-      "linea": 1,
-      "viajeros_predichos": 6826,
-      "riesgo": "medio",
-      "porcentaje_maximo_historico": 0.7426
     }
   ]
 }
 ```
 
-### Niveles de riesgo
+---
 
-| Nivel | Criterio |
-|-------|----------|
-| 🟢 Bajo | Predicción < 70% del máximo histórico de la línea |
-| 🟡 Medio | Entre 70% y 85% del máximo histórico |
-| 🔴 Alto | Por encima del 85% del máximo histórico |
+# 🚦 Congestion Risk Levels
+
+| Level | Criteria |
+|--------|----------|
+| 🟢 Low | Below 70% of the historical maximum |
+| 🟡 Medium | Between 70% and 85% |
+| 🔴 High | Above 85% of the historical maximum |
 
 ---
 
-## 🧠 Modelado
+# 🧠 Machine Learning
 
-### Fuente de datos
+## Dataset
 
-- **EMT Madrid** — viajeros diarios por línea desde 2019 hasta 2026
-- Más de 536.000 registros tras la limpieza
-- Incluye el periodo COVID (2020–2021) como dato contextual
+- EMT Madrid daily passenger demand (2019–2026)
+- More than **536,000 cleaned observations**
+- Includes the COVID-19 period (2020–2021)
 
-### Features construidas
+## Engineered Features
 
-| Feature | Descripción |
-|---------|-------------|
-| `lag_7d` | Demanda hace 7 días — mismo día de la semana |
-| `lag_14d` | Demanda hace 14 días |
-| `lag_28d` | Demanda hace 28 días — mismo día hace 4 semanas |
-| `media_movil_7d` | Media de los últimos 7 días |
-| `media_movil_14d` | Media de los últimos 14 días |
-| `dia_semana` | Día de la semana (0=lunes, 6=domingo) |
-| `mes` | Mes del año |
-| `es_festivo` | Festivo nacional o de la Comunidad de Madrid |
-| `es_dia_especial` | Fin de semana o festivo |
-| `es_covid` | Periodo pandémico (2020–2021) |
-| `es_outlier` | Valor atípico detectado con IQR × 3 |
-
-### Decisiones técnicas relevantes
-
-- **Baseline**: lag de 7 días — predice que la demanda de hoy será igual a la del mismo día de la semana anterior. Se eligió frente a Prophet o SARIMA porque ambos requieren entrenar un modelo por línea (más de 200), lo que es ineficiente e imposible de integrar con el evaluador compartido.
-- **Modelo principal**: LightGBM con hiperparámetros optimizados por Optuna en 50 iteraciones.
-- **Validación**: TimeSeriesSplit con 5 folds — siempre se entrena con datos pasados y se valida con datos futuros.
-- **Outliers**: marcados pero no eliminados — son eventos reales (huelgas, eventos masivos) que el modelo debe conocer.
-- **COVID**: marcado con columna booleana para que el modelo aprenda el comportamiento atípico de esos años.
-- **Línea 868**: excluida del entrenamiento — línea temporal que solo existió de octubre a diciembre de 2025 con demanda 15–20 veces superior a cualquier otra línea.
+| Feature | Description |
+|----------|-------------|
+| `lag_7d` | Demand one week earlier |
+| `lag_14d` | Demand two weeks earlier |
+| `lag_28d` | Demand four weeks earlier |
+| `rolling_mean_7d` | 7-day moving average |
+| `rolling_mean_14d` | 14-day moving average |
+| `day_of_week` | Weekday indicator |
+| `month` | Month of the year |
+| `is_holiday` | Public holiday |
+| `is_special_day` | Weekend or holiday |
+| `is_covid` | COVID period |
+| `is_outlier` | IQR × 3 outlier flag |
 
 ---
 
-## 📦 Dependencias principales
+# ⚙️ Technical Decisions
 
-| Librería | Uso |
-|----------|-----|
-| pandas, numpy | Manipulación y procesamiento de datos |
-| lightgbm | Modelo principal de predicción |
-| optuna | Optimización automática de hiperparámetros |
-| scikit-learn | Validación temporal y métricas |
-| mlflow | Registro de experimentos |
-| joblib | Serialización del modelo |
-| fastapi, uvicorn | API REST |
-| streamlit, plotly | Dashboard interactivo |
-| pyyaml | Lectura de configuración |
+### Baseline
 
-Instalar todo con:
+A simple **7-day lag model** was selected as the benchmark.
+
+Unlike Prophet or SARIMA, this approach scales efficiently across more than **200 bus lines**, allowing a unified evaluation framework without training one model per route.
+
+### Main Model
+
+- LightGBM
+- Hyperparameter optimization with Optuna (50 trials)
+
+### Validation Strategy
+
+- TimeSeriesSplit
+- 5 folds
+- Strict chronological evaluation
+
+### Outliers
+
+Outliers are **flagged but not removed**, since they represent real operational events such as strikes or city-wide events.
+
+### COVID Feature
+
+A dedicated boolean feature allows the model to learn abnormal passenger behavior during the pandemic.
+
+### Bus Line 868
+
+Route 868 was excluded from training because it only operated between October and December 2025 and presented demand values **15–20× larger** than every other route, severely biasing the model.
+
+---
+
+# 📦 Main Dependencies
+
+| Library | Purpose |
+|----------|---------|
+| pandas, numpy | Data manipulation |
+| lightgbm | Gradient boosting model |
+| optuna | Hyperparameter optimization |
+| scikit-learn | Metrics & validation |
+| mlflow | Experiment tracking |
+| joblib | Model serialization |
+| fastapi, uvicorn | REST API |
+| streamlit, plotly | Interactive dashboard |
+| pyyaml | Configuration management |
+
+Install everything with:
 
 ```bash
 pip install -r requirements.txt
@@ -291,29 +379,46 @@ pip install -r requirements.txt
 
 ---
 
-## 📅 Estado del proyecto
+# 📅 Project Status
 
-El proyecto está completo e incluye pipeline de datos, modelo entrenado, validación con datos reales, API REST y dashboard interactivo. Las siguientes funcionalidades están contempladas como evolución futura:
+The project is fully functional and includes:
 
-- Reentrenamiento automático periódico con datos nuevos
-- Integración de señales externas — feed de Twitter/X de la EMT para detección de incidencias
-- Predicción a nivel de parada (requiere datos horarios por parada)
-- Despliegue en servidor con autenticación en los endpoints
+- Data ingestion pipeline
+- Feature engineering
+- Model training
+- Hyperparameter optimization
+- Experiment tracking
+- Validation on unseen data
+- REST API
+- Interactive dashboard
 
----
+Future improvements may include:
 
-## 🤝 Contribuciones
-
-Este proyecto está abierto a sugerencias y feedback. Si tienes ideas de mejora o encuentras algún bug, no dudes en abrir un issue.
-
----
-
-## 👨‍💻 Autor
-
-David Cereceda Pérez  
-[GitHub](https://github.com/dcerecedaa) | [LinkedIn](https://linkedin.com/in/david-cereceda-perez-3ba0962b6)
+- Automatic model retraining
+- Integration of external incident signals (Twitter/X)
+- Bus stop-level forecasting
+- Cloud deployment with authentication
 
 ---
 
-> ⚠️ **Nota final:** Este proyecto es educativo y de demostración.  
-> No está pensado para uso comercial ni producción, y se incluyen limitaciones intencionadas para mantener la implementación clara y enfocada en la lógica técnica.
+# 🤝 Contributing
+
+Suggestions, improvements, and bug reports are welcome.
+
+Feel free to open an issue or submit a pull request.
+
+---
+
+# 👨‍💻 Author
+
+**David Cereceda Pérez**
+
+- GitHub: https://github.com/decerecedaa
+- LinkedIn: https://linkedin.com/in/david-cereceda-perez-3ba0962b6
+
+---
+
+> **Disclaimer**
+>
+> This project was developed for educational and portfolio purposes.
+> It is not intended for production use, and some implementation decisions were deliberately simplified to keep the codebase focused on demonstrating Machine Learning and software engineering concepts.
